@@ -24,7 +24,7 @@
         return new Core();
     }
 
-    public static function startGame() {
+    public function startGame() {
         Api::init()->writeJSON();
     }
  }

@@ -28,9 +28,9 @@
         return new Api();
     }
 
-    public static function writeJSON() {
+    public function writeJSON() {
 		// logging
-		Core::$mysqli->query("INSERT INTO `api_calls` (`id`, `ip`, `identity`, `query`, `code`, `timestamp`) VALUES (NULL, '" . Core::$remote_IP  . "', '" . $this->identity . "', '" . $this->query . "', '" . $this->code . "', '" . date("Y-m-d H:i:s") . "')");
+		//Core::$mysqli->query("INSERT INTO `api_calls` (`id`, `ip`, `identity`, `query`, `code`, `timestamp`) VALUES (NULL, '" . Core::$remote_IP  . "', '" . $this->identity . "', '" . $this->query . "', '" . $this->code . "', '" . date("Y-m-d H:i:s") . "')");
 
 		$json = array(
 			"timestamp" 		=> time(),
