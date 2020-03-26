@@ -1,0 +1,6 @@
+textovka
+--------
+
+REST API text-based game v1
+
+curl -sSL https://text.n0p.cz/
