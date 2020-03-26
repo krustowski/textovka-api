@@ -6,6 +6,8 @@
  * REST API text-based game
  */
 
+ namespace textovka;
+
  class Api {
 
     private $name = "textovka API";
@@ -26,7 +28,7 @@
         return new Api();
     }
 
-    public function writeJSON() {
+    public static function writeJSON() {
 		// logging
 		Core::$mysqli->query("INSERT INTO `api_calls` (`id`, `ip`, `identity`, `query`, `code`, `timestamp`) VALUES (NULL, '" . Core::$remote_IP  . "', '" . $this->identity . "', '" . $this->query . "', '" . $this->code . "', '" . date("Y-m-d H:i:s") . "')");
 
