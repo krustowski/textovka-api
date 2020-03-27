@@ -1,0 +1,12 @@
+{
+    "name": "krusty",
+    "hp": 100,
+    "time_elapsed": 0,
+    "inventary": [
+        "key1", "pickaxe"
+    ],
+    "x-pos": 0,
+    "y-pos": 0,
+    "room": "",
+    "graph": {}
+}

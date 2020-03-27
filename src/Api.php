@@ -40,7 +40,7 @@
 			"message" 		    => $this->message,
 			"api_quota_hourly"	=> $this->api_quota,
 			"api_usage"		    => $this->api_usage,
-			"system_load" 		=> sys_getloadavg(),
+			"system_load" 		=> sys_getloadavg() ?? NULL,
 			"identity" 		    => $this->identity,
 			"acl" 		    	=> $this->acl,
 			"query"		    	=> $this->query,
