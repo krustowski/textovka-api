@@ -13,8 +13,7 @@
     private $name = "textovka API";
 	private $version = "v1";
 	private $code = 200;
-	private $message = "OK";
-	private $gets = array();
+	private $message = "API OK";
 	private $log_file = __DIR__ . "/../log/game.log";
 	private $timestamp;
 	private $remote_ip;
@@ -40,15 +39,16 @@
 		// XSS
 		$gets = array_map("htmlspecialchars", $_GET);
 
-		// blank API call
-		if (!isset($gets["apikey"]) && !isset($gets["register"])) {
-			$this->message = "No API key (apikey) passed. You can get one by performing a registration by appending 'register=user_name' where 'user_name' is your nickname.";
-			$this->writeJSON();
-		}
-
 		// register API call
 		if (isset($gets["register"]) && !empty($gets["register"])) {
+			$this->nickname = $gets["register"];
 			$this->generateKey();
+		}
+		
+		// blank API call
+		if (!isset($gets["apikey"])) {
+			$this->message = "No API key (apikey) passed. You can get one by performing a registration by appending 'register=user_name' where 'user_name' is your nickname.";
+			$this->writeJSON();
 		}
 
 		// wrong API key, data file (user) does not exist
@@ -56,30 +56,48 @@
 			$this->message = "Unknown API key (apikey) given.";
 			$this->writeJSON();
 		}
+
+		$this->apikey = $gets["apikey"];
+		$this->loadData();
+
+		// end of processing -> end of algorithm
+		$this->writeJSON();
 	}
 
 	private function generateKey() {
+		$new_hash = null;
+
 		while (true) {
-			$new_hash = hash("sha256", $this->timestamp . $gets["register"]);
+			$new_hash = hash("sha256", $this->timestamp . $this->nickname);
 
 			if (!file_exists(__DIR__ . "/../data/" . $new_hash . ".json")) 
 				break;
 		}
 
-		$this->nickname = $gets["register"];
+		// TODO: create new file in data/
+		$json_data = [
+			"graph" => $this->graph,
+
+		];
+
+		file_put_contents(__DIR__ . "/../data/" . $new_hash . ".json", $json_data);
+
 		$this->apikey = $new_hash;
 		$this->is_new_user = true;
-		$this->message = "New API key (apikey) for '" . $gets["register"] . "' generated.";
+		$this->message = "New API key (apikey) for '" . $this->nickname . "' generated.";
 		$this->writeJSON();
+	}
+
+	private function getData() {
+		// TODO: load existing JSON
+		$data = json_decode(__DIR__ . "/../data/" . $this->apikey . ".json");
 	}
 
     private function writeJSON() {
 		// logging
 		file_put_contents($this->log_file, $this->timestamp . " / " . $this->nickname . " / " . $this->action . " / " . $this->remote_ip . "\n", FILE_APPEND);
 
-		$new_key = ($is_new_user ? array("apikey" => $this->apikey) . "," : null);
-
-		$json = array(
+		$json_output = array(
 			"api" => array(
 				"name"				=> $this->name,
 				"version"			=> $this->version,
@@ -91,7 +109,7 @@
 
 		// put JSON data
 		header('Content-type: text/javascript');
-		echo json_encode($json, JSON_PRETTY_PRINT);
+		echo json_encode($json_output, JSON_PRETTY_PRINT);
 		exit();
 	}
  }
