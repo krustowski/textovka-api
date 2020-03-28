@@ -12,4 +12,5 @@ foreach (glob("src/*.php") as $filename) {
     include_once $filename;
 }
 
-Core::init()->startGame();
+//Core::init()->startGame();
+new Game();
