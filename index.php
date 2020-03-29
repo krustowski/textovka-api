@@ -8,6 +8,7 @@
 
 namespace textovka;
 
+// load all classes
 foreach (glob("src/*.php") as $filename) {
     include_once $filename;
 }

@@ -1,0 +1,67 @@
+{
+	"default_room": "aa",
+	"rooms": [
+		"aa", "bb", "cc", "dd", "ee", "ff"
+	],
+	"room": {
+		"aa": {
+			"description": "Welcome in the initial room. There is nothing here. You can try going to north, south, east or west.",
+			"north": "bb",
+			"south": "cc",
+			"east": "dd",
+			"west": "ee"
+		},
+		"bb": {
+			"description": "There is a dark, deep pond of water in this room.",
+			"south": "aa",
+			"items": [],
+			"objects": [
+				"water"
+			],
+			"actions": [
+				"pick-water"
+			]
+		},
+		"cc": {
+			"description": "There is a bucket in this room.",
+			"north": "aa",
+			"items": [
+				"bucket"
+			],
+			"actions": [
+				"pick-bucket"
+			]
+		},
+		"dd": {
+			"description": "There is fire in this room! You can only go back to west.",
+			"west": "aa",
+			"east": "ff",
+			"objects": [
+				"fire"
+			],
+			"actions": [
+				"quench-fire"
+			]
+		},
+		"ee": {
+			"description": "There is locked door in this room. You have to possess a special key to be able to gain access to the next room.",
+			"east": "aa",
+			"objects": [
+				"locked-door"
+			],
+			"actions": [
+				"unlock-door"
+			]
+		},
+		"ff" : {
+			"description": "There is a magic key in this very dark room!",
+			"west": "dd",
+			"items": [
+				"magic-key"
+			],
+			"actions": [
+				"pick-key"
+			]
+		}
+	} 
+}
