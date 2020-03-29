@@ -33,7 +33,7 @@
 	// init function
     public function __construct() {
 		// init
-		$this->timestamp = time() ?? null;
+		$this->timestamp = microtime(true);
 		$this->remote_ip = $_SERVER["REMOTE_ADDR"] ?? "none";
 
 		// process URI queries
@@ -121,7 +121,7 @@
 			"hp" 				=> 100,
 			"inventary" 		=> [],
 			"room"				=> $init_map["default_room"],
-			"time_registred"	=> $this->timestamp, 
+			"time_registred"	=> (int)$this->timestamp, 
 			"map" 				=> $init_map
 		];
 
@@ -205,7 +205,7 @@
 	// put JSON to player - exit function
     private function writeJSON($code = 200) {
 		// logging
-		file_put_contents($this->log_file, $this->timestamp . " / " . ($this->nickname ?? "none") . " / " . ($this->action ?? "none") . " / " . $this->remote_ip . "\n", FILE_APPEND);
+		file_put_contents($this->log_file, (int)$this->timestamp . " / " . ($this->nickname ?? "none") . " / " . ($this->action ?? "none") . " / " . $this->remote_ip . "\n", FILE_APPEND);
 
 		// player data
 		$player_data = [
@@ -213,7 +213,7 @@
 			"hp" 			=> $this->hp,
 			"room"			=> $this->room,
 			"inventary" 	=> $this->inventary,
-			"time_elapsed"	=> (int)$this->timestamp - (int)$data["time_registred"]
+			"time_elapsed"	=> (int)$this->timestamp - (int)$this->time_registred
 		];
 
 		// room data
@@ -228,11 +228,12 @@
 			"api" => [
 				"name"				=> $this->apiname,
 				"version"			=> $this->version,
-				"build"				=> md5_file(__FILE__) ?? null,
+				"engine_build"		=> md5_file(__FILE__) ?? null,
+				"exec_time_in_ms"	=> round((microtime(true) - $this->timestamp) * 1000, 2),
 				"status_code"		=> $code,
 				"action"			=> $this->action,
 				"apikey"			=> $this->apikey,				
-				"timestamp"			=> time()	
+				"timestamp"			=> (int)$this->timestamp	
 			],
 			"player" 	=> (!is_null($this->room) ? $player_data : []),
 			"room"		=> (!is_null($this->room) ? $room_data : []),
