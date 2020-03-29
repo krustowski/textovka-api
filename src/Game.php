@@ -19,7 +19,7 @@
 	private $apikey = "none";
 
 	// user attributes
-	private $nickname = "none";
+	private $nickname = null;
 	private $hp = 100;
 	private $room = null;
 	private $inventary = array();
@@ -205,9 +205,9 @@
 	// put JSON to player - exit function
     private function writeJSON($code = 200) {
 		// logging
-		file_put_contents($this->log_file, $this->timestamp . " / " . $this->nickname . " / " . ($this->action ?? "none") . " / " . $this->remote_ip . "\n", FILE_APPEND);
+		file_put_contents($this->log_file, $this->timestamp . " / " . ($this->nickname ?? "none") . " / " . ($this->action ?? "none") . " / " . $this->remote_ip . "\n", FILE_APPEND);
 
-		// player data for JSON output
+		// player data
 		$player_data = [
 			"nickname" 		=> $this->nickname,
 			"hp" 			=> $this->hp,
@@ -228,12 +228,13 @@
 			"api" => [
 				"name"				=> $this->apiname,
 				"version"			=> $this->version,
+				"build"				=> md5_file(__FILE__) ?? null,
 				"status_code"		=> $code,
 				"action"			=> $this->action,
 				"apikey"			=> $this->apikey,				
 				"timestamp"			=> time()	
 			],
-			"player" 	=> $player_data,
+			"player" 	=> (!is_null($this->room) ? $player_data : []),
 			"room"		=> (!is_null($this->room) ? $room_data : []),
 			"message" 	=> $this->message
 		];
