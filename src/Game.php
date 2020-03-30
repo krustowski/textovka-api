@@ -22,7 +22,7 @@
 	private $nickname = null;
 	private $hp = 100;
 	private $room = null;
-	private $inventary = array();
+	private $inventary = [];
 	private $map = null;
 	private $time_registred;
 	private $action;
@@ -111,7 +111,7 @@
 
 		// invalid map file
 		if (is_null($init_map)) {
-			$this->message = "Internal game error: invalid map";
+			$this->message = "Internal game error: invalid map (invalid JSON file)";
 			$this->writeJSON(500);
 		}
 
@@ -183,6 +183,59 @@
 			$this->message = $this->map["room"][$this->room]["description"];
 		}
 
+		// room-specified actions
+		if (in_array($this->action, $room_actions)) {
+			$effects = $this->map["room"][$this->room]["effects"][$this->action] ?? null;
+
+			// world map error: no effects for action(s)
+			if (is_null($effects)) {
+				$this->message = "Internal game error: invalid map (no effects for actions)";
+				$this->writeJSON(500);
+			}
+
+			// type of action must be defined
+			if (!isset($effects["type"])) {
+				$this->message = "Internal game error: invalid map (action type not specified)";
+				$this->writeJSON(500);
+			}
+
+			$show_hidden = false;
+
+			// TODO: prepare switch for room action types
+			switch ($effects["type"]) {
+				case "pick":
+					// defined: item
+				break;
+				case "fight":
+				break;
+			}
+
+			// TODO: show hidden room parts!
+			if ($show_hidden) {}
+
+			// "pick" actions
+			if (isset($effects["inventory"]) && $effects["inventory"]) {
+				if (isset($effects["item"])) {
+					// put item to inventory and delete it from player's map
+					echo $effects["item"];
+
+					$inventary = $this->inventary;
+
+					array_push($inventary, $effects["item"]);
+					$item_key = array_search($effects["item"], $this->map["room"][$this->room]["items"]);
+					unset($this->map["room"][$this->room]["items"][$item_key]);
+					$item_key = array_search($this->action, $this->map["room"][$this->room]["actions"]);
+					unset($this->map["room"][$this->room]["actions"][$item_key]);
+
+					$this->inventary = $inventary;
+					$this->message = "Key picked.";
+				} else {
+					$this->message = "Internal game error: invalid map (no items for such action)";
+					$this->writeJSON();
+				}
+			}
+		}
+
 		// update player data and exit
 		$this->updateUserData();
 		$this->writeJSON();
@@ -237,7 +290,7 @@
 			],
 			"player" 	=> (!is_null($this->room) ? $player_data : []),
 			"room"		=> (!is_null($this->room) ? $room_data : []),
-			"message" 	=> $this->message
+			"message" 	=> $this->message ?? $this->map["room"][$this->room]["description"]
 		];
 
 		// put JSON data

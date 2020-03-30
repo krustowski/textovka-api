@@ -46,12 +46,22 @@
 		"ee": {
 			"description": "There is locked door in this room. You have to possess a special key to be able to gain access to the next room.",
 			"east": "aa",
+			"hidden-west": "gg",
+			"hidden-description": "There is a unlocked door in this room. You can continue to west.",
 			"objects": [
 				"locked-door"
 			],
 			"actions": [
 				"unlock-door"
-			]
+			],
+			"effects": {
+				"unlock-door": {
+					"required_item": "magic-key",
+					"show-hidden": [
+						"hidden-west", "hidden-description"
+					]
+				}
+			}
 		},
 		"ff" : {
 			"description": "There is a magic key in this very dark room!",
@@ -61,7 +71,14 @@
 			],
 			"actions": [
 				"pick-key"
-			]
+			],
+			"effects": {
+				"pick-key": {
+					"type": "pick",
+					"inventory": true,
+					"item": "magic-key"
+				}
+			}
 		}
 	} 
 }
