@@ -1,5 +1,7 @@
 {
-	"default_room": "aa",
+	"start_room": "aa",
+	"exit_room": "gg",
+
 	"rooms": [
 		"aa", "bb", "cc", "dd", "ee", "ff"
 	],
@@ -20,34 +22,64 @@
 			],
 			"actions": [
 				"pick-water"
-			]
+			],
+			"effects": {
+				"pick-water": {
+					"type": "fill",
+					"required-item": "bucket",
+					"object": "water"
+				}
+			}
 		},
 		"cc": {
 			"description": "There is a bucket in this room.",
 			"north": "aa",
+			"hidden": {
+				"description": "This room is empty right now. Except you, ehm."
+			},
 			"items": [
 				"bucket"
 			],
 			"actions": [
 				"pick-bucket"
-			]
+			],
+			"effects": {
+				"pick-bucket": {
+					"type": "pick",
+					"item": "bucket",
+					"show-hidden": true
+				}
+			}
 		},
 		"dd": {
 			"description": "There is fire in this room! You can only go back to west.",
 			"west": "aa",
-			"east": "ff",
+			"hidden": {
+				"description": "It is very smoky and wet in here. There must have been a fire!",
+				"east": "ff"
+			},
 			"objects": [
 				"fire"
 			],
 			"actions": [
 				"quench-fire"
-			]
+			],
+			"effects": {
+				"quench-fire": {
+					"type": "dismiss",
+					"object": "fire",
+					"required-item": "bucket-water",
+					"show-hidden": true
+				}
+			}
 		},
 		"ee": {
 			"description": "There is locked door in this room. You have to possess a special key to be able to gain access to the next room.",
 			"east": "aa",
-			"hidden-west": "gg",
-			"hidden-description": "There is a unlocked door in this room. You can continue to west.",
+			"hidden": {
+				"description": "There is a unlocked door in this room. You can continue to west.",
+				"west": "gg"
+			},
 			"objects": [
 				"locked-door"
 			],
@@ -56,16 +88,18 @@
 			],
 			"effects": {
 				"unlock-door": {
-					"required_item": "magic-key",
-					"show-hidden": [
-						"hidden-west", "hidden-description"
-					]
+					"type": "unlock",
+					"required-item": "magic-key",
+					"show-hidden": true
 				}
 			}
 		},
 		"ff" : {
 			"description": "There is a magic key in this very dark room!",
 			"west": "dd",
+			"hidden": {
+				"description": "This room is dark and only dark."
+			},
 			"items": [
 				"magic-key"
 			],
@@ -75,10 +109,14 @@
 			"effects": {
 				"pick-key": {
 					"type": "pick",
-					"inventory": true,
-					"item": "magic-key"
+					"item": "magic-key",
+					"show-hidden": true
 				}
 			}
+		},
+		"gg": {
+			"description": "You won the game!",
+			"exit_room": true
 		}
 	} 
 }

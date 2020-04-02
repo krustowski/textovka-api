@@ -22,13 +22,16 @@
 	private $nickname = null;
 	private $hp = 100;
 	private $room = null;
+	private $exit_room = null;
 	private $inventary = [];
 	private $map = null;
 	private $time_registred;
 	private $action;
+	private $game_ended = false; // won game
+	private $game_over; // TODO: implement this
 	
 	// hashing
-	const PEPPER = "7e0952136aba42e91fcf7967f490da3d6d4cb175a5916f8e451f924ea77caeb5";
+	const PEPPER = "e7748b05b6d25adfd32e6b9ba81c44cf2012981278aea32cc22a5ae0ee8e2008";
 	
 	// init function
     public function __construct() {
@@ -120,7 +123,9 @@
 			"nickname" 			=> $this->nickname,
 			"hp" 				=> 100,
 			"inventary" 		=> [],
-			"room"				=> $init_map["default_room"],
+			"room"				=> $init_map["start_room"],
+			"exit_room"			=> $init_map["exit_room"],
+			"game_ended"		=> false,
 			"time_registred"	=> (int)$this->timestamp, 
 			"map" 				=> $init_map
 		];
@@ -149,9 +154,16 @@
 		$this->nickname			= $data["nickname"];
 		$this->hp 				= $data["hp"];
 		$this->room				= $data["room"];
+		$this->exit_room		= $data["map"]["exit_room"];
 		$this->inventary		= $data["inventary"];
 		$this->time_registred 	= $data["time_registred"];
 		$this->map				= $data["map"];
+		$this->game_ended		= $data["game_ended"];
+
+		if ($this->game_ended) {
+			$this->message = "Game ended, there is nothing else to do!";
+			$this->writeJSON();
+		}
 	}
 
 	// process given action
@@ -174,7 +186,7 @@
 
 			// path undefined
 			if (!isset($this->map["room"][$this->room][$direction])) {
-				$this->message = "There is no such way in this room.";
+				$this->message = "You cannot go that way here!";
 				$this->writeJSON(404);
 			}
 
@@ -184,7 +196,7 @@
 		}
 
 		// room-specified actions
-		if (in_array($this->action, $room_actions)) {
+		if (!is_null($room_actions) && in_array($this->action, $room_actions)) {
 			$effects = $this->map["room"][$this->room]["effects"][$this->action] ?? null;
 
 			// world map error: no effects for action(s)
@@ -195,45 +207,103 @@
 
 			// type of action must be defined
 			if (!isset($effects["type"])) {
-				$this->message = "Internal game error: invalid map (action type not specified)";
+				$this->message = "Internal game error: invalid map (effect type not specified)";
 				$this->writeJSON(500);
 			}
-
-			$show_hidden = false;
 
 			// TODO: prepare switch for room action types
 			switch ($effects["type"]) {
 				case "pick":
 					// defined: item
+					if (isset($effects["item"])) {
+						// put item to inventory and delete it from player's map	
+						$inventary = $this->inventary;
+	
+						array_push($inventary, $effects["item"]);
+						$item_key = array_search($effects["item"], $this->map["room"][$this->room]["items"]);
+						unset($this->map["room"][$this->room]["items"][$item_key]);
+						$item_key = array_search($this->action, $this->map["room"][$this->room]["actions"]);
+						unset($this->map["room"][$this->room]["actions"][$item_key]);
+	
+						$this->inventary = $inventary;
+						$this->message = "Item picked.";
+					} else {
+						$this->message = "Internal game error: invalid map (no item in effects)";
+						$this->writeJSON();
+					}
 				break;
+
+				case "dismiss":
+					// defined: object
+					if (isset($effects["object"]) && isset($effects["required-item"])) {
+						$inventary = $this->inventary;
+
+						if (!in_array($effects["required-item"], $inventary)) {
+							$this->message = "You do not have a required item!";
+							$this->writeJSON();
+						}
+
+						// dissmis the item too
+						$object_key = array_search($effects["required-item"], $inventary);
+						$inventary[$object_key] = null;
+
+						$object_key = array_search($effects["object"], $this->map["room"][$this->room]["objects"]);
+						unset($this->map["room"][$this->room]["objects"][$object_key]);
+						$object_key = array_search($this->action, $this->map["room"][$this->room]["actions"]);
+						unset($this->map["room"][$this->room]["actions"][$object_key]);
+
+						$this->inventary = $inventary;
+						$this->message = "Object " . " dismissed.";
+					} else {
+						$this->message = "Internal game error: invalid map (no object in effects)";
+					}
+				break;
+
+				case "fill":
+					// defined: required-item, object
+					if (isset($effects["required-item"])) {
+						$inventary = $this->inventary;
+
+						if (!in_array($effects["required-item"], $inventary)) {
+							$this->message = "You do not have a required item!";
+							$this->writeJSON();
+						}
+
+						$object_key = array_search($effects["required-item"], $inventary);
+						$inventary[$object_key] = $effects["required-item"] . "-" . $effects["object"];
+						$object_key = array_search($effects["object"], $this->map["room"][$this->room]["objects"]);
+						unset($this->map["room"][$this->room]["objects"][$object_key]);
+						$object_key = array_search($this->action, $this->map["room"][$this->room]["actions"]);
+						unset($this->map["room"][$this->room]["actions"][$object_key]);
+
+						$this->inventary = $inventary;
+						$this->message = "Filled the item with object";
+					} else {
+						$this->message = "Internal game error: invalid map (no required-item in effects)";
+					}
+				break;
+
 				case "fight":
+					// defined: object
+					// defined: item ?? none => very low damage
 				break;
 			}
 
-			// TODO: show hidden room parts!
-			if ($show_hidden) {}
+			$hidden = $this->map["room"][$this->room]["hidden"] ?? null;
 
-			// "pick" actions
-			if (isset($effects["inventory"]) && $effects["inventory"]) {
-				if (isset($effects["item"])) {
-					// put item to inventory and delete it from player's map
-					echo $effects["item"];
-
-					$inventary = $this->inventary;
-
-					array_push($inventary, $effects["item"]);
-					$item_key = array_search($effects["item"], $this->map["room"][$this->room]["items"]);
-					unset($this->map["room"][$this->room]["items"][$item_key]);
-					$item_key = array_search($this->action, $this->map["room"][$this->room]["actions"]);
-					unset($this->map["room"][$this->room]["actions"][$item_key]);
-
-					$this->inventary = $inventary;
-					$this->message = "Key picked.";
-				} else {
-					$this->message = "Internal game error: invalid map (no items for such action)";
-					$this->writeJSON();
+			// show hidden room parts
+			if (isset($effects["show-hidden"]) && $effects["show-hidden"] && !is_null($hidden)) {
+				// rewrite hidden array keys
+				foreach (array_keys($hidden) as $hidden_key) {
+					$this->map["room"][$this->room][$hidden_key] = $hidden[$hidden_key];
 				}
 			}
+		}
+
+		// game ended!
+		if ($this->room == $this->exit_room) {
+			$this->message = "Gongratz! You won the game!";
+			$this->game_ended = true;
 		}
 
 		// update player data and exit
@@ -249,6 +319,7 @@
 			"inventary" 		=> $this->inventary,
 			"room"				=> $this->room,
 			"time_registred"	=> $this->time_registred, 
+			"game_ended"		=> $this->game_ended,
 			"map" 				=> $this->map
 		];
 
@@ -266,7 +337,8 @@
 			"hp" 			=> $this->hp,
 			"room"			=> $this->room,
 			"inventary" 	=> $this->inventary,
-			"time_elapsed"	=> (int)$this->timestamp - (int)$this->time_registred
+			"time_elapsed"	=> (int)$this->timestamp - (int)$this->time_registred,
+			"game_ended"	=> $this->game_ended
 		];
 
 		// room data
