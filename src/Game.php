@@ -26,6 +26,7 @@
 	private $inventary = [];
 	private $map = null;
 	private $time_registred;
+	private $time_ended = null;
 	private $action;
 	private $game_ended = false; // won game
 	private $game_over; // TODO: implement this
@@ -127,6 +128,7 @@
 			"exit_room"			=> $init_map["exit_room"],
 			"game_ended"		=> false,
 			"time_registred"	=> (int)$this->timestamp, 
+			"time_ended"		=> null,
 			"map" 				=> $init_map
 		];
 
@@ -157,6 +159,7 @@
 		$this->exit_room		= $data["map"]["exit_room"];
 		$this->inventary		= $data["inventary"];
 		$this->time_registred 	= $data["time_registred"];
+		$this->time_ended		= $data["time_ended"];
 		$this->map				= $data["map"];
 		$this->game_ended		= $data["game_ended"];
 
@@ -302,7 +305,8 @@
 
 		// game ended!
 		if ($this->room == $this->exit_room) {
-			$this->message = "Gongratz! You won the game!";
+			$this->message = "Congratz! You won the game!";
+			$this->time_ended = time();
 			$this->game_ended = true;
 		}
 
@@ -319,6 +323,7 @@
 			"inventary" 		=> $this->inventary,
 			"room"				=> $this->room,
 			"time_registred"	=> $this->time_registred, 
+			"time_ended"		=> $this->time_ended,
 			"game_ended"		=> $this->game_ended,
 			"map" 				=> $this->map
 		];
@@ -337,7 +342,7 @@
 			"hp" 			=> $this->hp,
 			"room"			=> $this->room,
 			"inventary" 	=> $this->inventary,
-			"time_elapsed"	=> (int)$this->timestamp - (int)$this->time_registred,
+			"time_elapsed"	=> !is_null($this->time_ended) ? ((int)$this->time_ended - (int)$this->time_registred) : ((int)$this->timestamp - (int)$this->time_registred),
 			"game_ended"	=> $this->game_ended
 		];
 
