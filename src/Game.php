@@ -189,7 +189,7 @@
 
 			// path undefined
 			if (!isset($this->map["room"][$this->room][$direction])) {
-				$this->message = "You cannot go that way here!";
+				$this->message = "You cannot go that way in this room!";
 				$this->writeJSON(404);
 			}
 
@@ -229,7 +229,7 @@
 						unset($this->map["room"][$this->room]["actions"][$item_key]);
 	
 						$this->inventary = $inventary;
-						$this->message = "Item picked.";
+						$this->message = $effects["item"] . " picked.";
 					} else {
 						$this->message = "Internal game error: invalid map (no item in effects)";
 						$this->writeJSON();
@@ -256,7 +256,7 @@
 						unset($this->map["room"][$this->room]["actions"][$object_key]);
 
 						$this->inventary = $inventary;
-						$this->message = "Object " . " dismissed.";
+						$this->message = "Object " . $effects["object"] . " dismissed.";
 					} else {
 						$this->message = "Internal game error: invalid map (no object in effects)";
 					}
@@ -280,7 +280,7 @@
 						unset($this->map["room"][$this->room]["actions"][$object_key]);
 
 						$this->inventary = $inventary;
-						$this->message = "Filled the item with object";
+						$this->message = "Filled the " . $effects["required-item"] . " with " . $effects["object"];
 					} else {
 						$this->message = "Internal game error: invalid map (no required-item in effects)";
 					}
