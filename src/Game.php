@@ -290,6 +290,16 @@
 					// defined: object
 					// defined: item ?? none => very low damage
 				break;
+
+				default:
+					if (isset($effects["required-item"])) {
+						$inventary = $this->inventary;
+
+						if (!in_array($effects["required-item"], $inventary)) {
+							$this->message = "You do not have a required item!";
+							$this->writeJSON();
+						}
+					}
 			}
 
 			$hidden = $this->map["room"][$this->room]["hidden"] ?? null;
