@@ -7,7 +7,7 @@
 	],
 	"room": {
 		"aa": {
-			"description": "Welcome in the initial room. There is nothing here. You can try going to north, south, east or west.",
+			"description": "Welcome in the initial room. There is nothing here. \nYou can try going to north, south, east or west.",
 			"north": "bb",
 			"south": "cc",
 			"east": "dd",
@@ -35,7 +35,7 @@
 			"description": "There is a bucket in this room.",
 			"north": "aa",
 			"hidden": {
-				"description": "This room is empty right now. Except you, ehm."
+				"description": "This room is empty right now."
 			},
 			"items": [
 				"bucket"
@@ -52,10 +52,10 @@
 			}
 		},
 		"dd": {
-			"description": "There is fire in this room! You can only go back to west.",
+			"description": "There is fire in this room! \nYou can only go back to west.",
 			"west": "aa",
 			"hidden": {
-				"description": "It is very smoky and wet in here. There must have been a fire!",
+				"description": "It is very smoky and wet in here. \nThere must have been a fire!",
 				"east": "ff"
 			},
 			"objects": [
@@ -74,10 +74,10 @@
 			}
 		},
 		"ee": {
-			"description": "There is locked door in this room. You have to possess a special key to be able to gain access to the next room.",
+			"description": "There is locked door in this room. You have to possess\na special key to be able to gain access to the next room.",
 			"east": "aa",
 			"hidden": {
-				"description": "There is a unlocked door in this room. You can continue to west.",
+				"description": "There is a unlocked door in this room. \nYou can continue to west.",
 				"west": "gg"
 			},
 			"objects": [

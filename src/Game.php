@@ -302,9 +302,12 @@
 					}
 			}
 
-			$hidden = $this->map["room"][$this->room]["hidden"] ?? null;
+			// clean the inventary
+			$this->inventary = array_filter($this->inventary);
 
 			// show hidden room parts
+			$hidden = $this->map["room"][$this->room]["hidden"] ?? null;
+
 			if (isset($effects["show-hidden"]) && $effects["show-hidden"] && !is_null($hidden)) {
 				// rewrite hidden array keys
 				foreach (array_keys($hidden) as $hidden_key) {
