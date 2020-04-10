@@ -5,6 +5,7 @@
 	"rooms": [
 		"aa", "bb", "cc", "dd", "ee", "ff"
 	],
+	
 	"room": {
 		"aa": {
 			"description": "Welcome in the initial room. There is nothing here. \nYou can try going to north, south, east or west.",
@@ -35,7 +36,7 @@
 			"description": "There is a bucket in this room.",
 			"north": "aa",
 			"hidden": {
-				"description": "This room is empty right now."
+				"description": "This room is very empty at the moment."
 			},
 			"items": [
 				"bucket"
@@ -69,7 +70,10 @@
 					"type": "dismiss",
 					"object": "fire",
 					"required-item": "bucket-water",
-					"show-hidden": true
+					"show-hidden": true,
+					"damage-hp": [
+						5, 20
+					]
 				}
 			}
 		},

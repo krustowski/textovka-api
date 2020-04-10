@@ -167,6 +167,11 @@
 			$this->message = "Game ended, there is nothing else to do!";
 			$this->writeJSON();
 		}
+
+		if ($this->hp <= 0) {
+			$this->message = "You are dead.";
+			$this->writeJSON();
+		}
 	}
 
 	// process given action
@@ -304,6 +309,13 @@
 
 			// clean the inventary
 			$this->inventary = array_filter($this->inventary);
+
+			// do the damage to player if defined (lower and upper hp levels)
+			if (isset($effects["damage-hp"]) && count($effects["damage-hp"]) == 2) {
+				$damage = rand($effects["damage-hp"][0], $effects["damage-hp"][1]);
+				$this->hp -= $damage; 
+				$this->message .= "\nHP lowered by " . $damage . ".";
+			}
 
 			// show hidden room parts
 			$hidden = $this->map["room"][$this->room]["hidden"] ?? null;
