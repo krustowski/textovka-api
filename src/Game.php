@@ -193,7 +193,7 @@
 			$direction = substr($this->action, 3);
 
 			// path undefined
-			if (!isset($this->map["room"][$this->room][$direction])) {
+			if (!isset($this->map["room"][$this->room][$direction]) || empty($this->map["room"][$this->room][$direction])) {
 				$this->message = "You cannot go that way in this room!";
 				$this->writeJSON(404);
 			}
