@@ -110,8 +110,13 @@
 			}
 		}
 
-		// load world map
-		$init_map = json_decode(file_get_contents(__DIR__ . "/../map.json"), true);
+		// maps
+		$maps = scandir(__DIR__ . "/../maps/");
+		$maps_count = count($maps);
+
+		// try to load the world map
+		$rand_map_num = ($maps_count > 2) ? rand(2, --$maps_count) : null;
+		$init_map = ($rand_map_num && $maps[$rand_map_num]) ? json_decode(file_get_contents(__DIR__ . "/../maps/" . $maps[$rand_map_num]), true) : json_decode(file_get_contents(__DIR__ . "/../map.json"), true);
 
 		// invalid map file
 		if (is_null($init_map)) {
@@ -306,6 +311,10 @@
 						}
 					}
 			}
+
+			// if the message was not set, try loading it up
+			if (empty($this->message) && isset($effects["message"]))
+				$this->message = $effects["message"];
 
 			// clean the inventary
 			$this->inventary = array_filter($this->inventary);
