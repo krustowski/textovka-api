@@ -16,7 +16,7 @@
 	private $log_file = __DIR__ . "/../game.log";
 	private $timestamp;
 	private $remote_ip;
-	private $apikey = "none";
+	private $apikey = null;
 
 	// user attributes
 	private $nickname = null;
@@ -25,6 +25,7 @@
 	private $exit_room = null;
 	private $inventary = [];
 	private $map = null;
+	private $map_name = null;
 	private $time_registered;
 	private $time_ended = null;
 	private $action;
@@ -38,7 +39,7 @@
     public function __construct() {
 		// init
 		$this->timestamp = microtime(true);
-		$this->remote_ip = $_SERVER["REMOTE_ADDR"] ?? "none";
+		$this->remote_ip = $_SERVER["REMOTE_ADDR"] ?? null;
 
 		// process URI queries
 		$this->processGets();
@@ -116,7 +117,9 @@
 
 		// try to load the world map
 		$rand_map_num = ($maps_count > 2) ? rand(2, --$maps_count) : null;
-		$init_map = ($rand_map_num && $maps[$rand_map_num]) ? json_decode(file_get_contents(__DIR__ . "/../maps/" . $maps[$rand_map_num]), true) : json_decode(file_get_contents(__DIR__ . "/../map.json"), true);
+		$init_map = ($rand_map_num && $maps[$rand_map_num]) ? json_decode(file_get_contents(__DIR__ . "/../maps/" . $maps[$rand_map_num]), true) : json_decode(file_get_contents(__DIR__ . "/../demo.json"), true);
+		
+		$this->map_name = ($rand_map_num && $maps[$rand_map_num]) ? $maps[$rand_map_num] : "demo.json";
 
 		// invalid map file
 		if (is_null($init_map)) {
@@ -134,6 +137,7 @@
 			"game_ended"		=> false,
 			"time_registered"	=> (int)$this->timestamp, 
 			"time_ended"		=> null,
+			"map_name"			=> $this->map_name,
 			"map" 				=> $init_map
 		];
 
@@ -252,7 +256,7 @@
 						$inventary = $this->inventary;
 
 						if (!in_array($effects["required-item"], $inventary)) {
-							$this->message = "You do not have a required item!";
+							$this->message = "You do not have a required item (" . $effects["required-item"] . ")!";
 							$this->writeJSON();
 						}
 
@@ -278,7 +282,7 @@
 						$inventary = $this->inventary;
 
 						if (!in_array($effects["required-item"], $inventary)) {
-							$this->message = "You do not have a required item!";
+							$this->message = "You do not have a required item (" . $effects["required-item"] . ")!";
 							$this->writeJSON();
 						}
 
@@ -306,7 +310,7 @@
 						$inventary = $this->inventary;
 
 						if (!in_array($effects["required-item"], $inventary)) {
-							$this->message = "You do not have a required item!";
+							$this->message = "You do not have a required item (" . $effects["required-item"] . ")!";
 							$this->writeJSON();
 						}
 					}
@@ -411,7 +415,7 @@
 		];
 
 		// put JSON data
-		http_response_code($code);
+		//http_response_code($code);
 		header('Content-type: text/javascript');
 		echo json_encode($json_output, JSON_PRETTY_PRINT);
 		exit();
