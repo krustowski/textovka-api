@@ -1,12 +1,13 @@
 {
-    "name": "krusty",
-    "hp": 100,
-    "time_elapsed": 0,
-    "inventary": [
-        "key1", "", "pickaxe"
-    ],
-    "x-pos": 0,
-    "y-pos": 0,
-    "room": "",
-    "graph": {}
+  "nickname": "random",
+  "hp": 86,
+  "inventary": [
+    "magic-key"
+  ],
+  "room": "gg",
+  "time_registred": 1586542166,
+  "time_ended": 1586542238,
+  "game_ended": true,
+  "map": {
+  }
 }

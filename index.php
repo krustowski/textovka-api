@@ -2,8 +2,8 @@
 
 /**
  * textovka v1
- * 
- * REST API text-based game
+ *
+ * PHP REST API text-based game engine
  */
 
 namespace textovka;

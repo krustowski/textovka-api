@@ -4,12 +4,14 @@
 
     "room": {
         "ly": {
-            "description": "This is the initial room. There is no action, nor item, nor object.\nBut you can try going to any direction. Each direction is a portal.",
+            "description": "This is the initial room. There is no action, nor item, nor object.\nBut you can try going to any direction.\nEach direction is an one-way portal.",
             "north": "wa",
             "south": "sr",
             "west": "mk",
             "east": "tt"
         },
+        "wa": {},
+        "sr": {},
         "mk": {
             "description": "There is a lonely acid paper on the floor!",
             "north": "well",
@@ -30,6 +32,7 @@
                 "description": "There is nothing in this room. Except that rainbow? Maybe?"
             }
         },
+        "tt": {},
         "well": {
             "description": "This is the well and you fell into it.",
             "actions": [
