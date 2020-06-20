@@ -11,8 +11,9 @@ namespace textovka;
 class Game
 {
     // API attributes
-    private $apiname = "textovka API";
+    private $apiname = "textovka REST API";
     private $version = "v1";
+    private $engine_build;
     private $message;
     private $log_file = __DIR__ . "/../game.log";
     private $timestamp;
@@ -42,6 +43,7 @@ class Game
         // init
         $this->timestamp = microtime(true);
         $this->remote_ip = $_SERVER["REMOTE_ADDR"] ?? null;
+        $this->engine_build = md5_file(__FILE__) ?? null;
 
         // process URI queries
         $this->processGets();
@@ -98,7 +100,7 @@ class Game
 
         // generate new hash until a new one can be used
         while (true) {
-            $new_hash = hash("sha256", self::PEPPER . $this->nickname);
+            $new_hash = hash("sha256", self::PEPPER . $this->nickname . $this->engine_build);
 
             if (!file_exists(__DIR__ . "/../data/" . $new_hash . ".json")) {
                 break;
@@ -411,7 +413,7 @@ class Game
             "api" => [
                 "name" => $this->apiname,
                 "version" => $this->version,
-                "engine_build" => md5_file(__FILE__) ?? null,
+                "engine_build" => $this->engine_build ?? null,
                 "exec_time_in_ms" => round((microtime(true) - $this->timestamp) * 1000, 2),
                 "status_code" => $code,
                 "action" => $this->action,
