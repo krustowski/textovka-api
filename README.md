@@ -66,9 +66,9 @@ curl -sSL "$ENDPOINT/?apikey=$APIKEY&action=go-north"
 | hp | health level | 0-100 | 100 |
 | inventary | JSON array of picked items | JSON array | `[]` |
 | room | current room | | `start_room` defined in map |
-| time-registred | self-explanatory | | current UNIX timestamp |
-| time-ended | self-explanatory | | game ended UNIX timestamp |
-| game-ended | self-explanatory | boolean | false |
+| time_registred | self-explanatory | | current UNIX timestamp |
+| time_ended | self-explanatory | | game ended UNIX timestamp |
+| game_ended | self-explanatory | boolean | false |
 | map | randomly assigned map | | `maps/demo.json` |
 
 User JSON structure example (`map` part trimmed):
@@ -187,6 +187,5 @@ Room-defined action types:
 
 ## TUI
 
-Python3 npyscreen TUI:
-
--> https://github.com/krustowski/textovka-tui
+Python3 npyscreen TUI:\
+https://github.com/krustowski/textovka-tui

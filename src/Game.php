@@ -358,7 +358,7 @@ class Game
         // game ended!
         if ($this->room == $this->exit_room) {
             $this->time_ended = time();
-            $time_elapsed = (int) $this->ended - (int) $this->registered;
+            $time_elapsed = (int) $this->time_ended - (int) $this->time_registered;
             $this->message = "Congratz! You won the game in " . $time_elapsed . " secs!";
             $this->game_ended = true;
         }
