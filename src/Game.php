@@ -118,7 +118,19 @@ class Game
         }
 
         // maps
-        $maps = scandir(__DIR__ . "/../maps/");
+        //$maps = scandir(__DIR__ . "/../maps/");
+        $maps = [];
+
+        // exclude testing maps (_testing.json)!
+        foreach (glob(__DIR__ . "/../maps/[^\_]*.json") as $map_file) {
+            array_push($maps, $map_file);
+        }
+
+        if(empty($maps)) {
+            $this->message = "Internal server error: no map file found";
+            $this->writeJSON(500);
+        }
+
         $maps_count = count($maps);
 
         // try to load the world map
