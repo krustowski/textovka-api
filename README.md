@@ -58,7 +58,7 @@ New user is "registred" as a new JSON file `data/$HASH.json`. The map is assigne
 curl -sSL "$ENDPOINT/?apikey=$APIKEY&action=go-north"
 ```
 
-## Player variables and JSON structure
+## Player variables and structure
 
 | variable | desc | range | default |
 |----|----|----|----|
@@ -177,15 +177,22 @@ implemented in such room.
 
 Room-defined action types:
 
-| type | description |
+| type | desc |
 |----|----|
 | pick | used for picking items in room (those have to be listed in `items`) |
 | dismiss | self-explanatory, used for fire quenching for example |
 | fill | used to fill other objects in `invetary` (bucket with water etc) |
-| fight | _to be implemented_ |
+| fight | _to be implemented in v2_ |
 | * | generic action (door unlocking etc) |
 
 ## TUI
 
 Python3 npyscreen TUI:\
 https://github.com/krustowski/textovka-tui
+
+## Version 2 (v2) ideas
+
+- fights with NPCs (used item defines its damage)
+- basic multiplayer support (shared maps, paired map solving, fighting etc)
+- map choosing @ registration (list given before registration, optional argument in GET request)
+- player's password (hashed in JSON, prolly sha512)
