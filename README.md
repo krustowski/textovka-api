@@ -196,3 +196,7 @@ https://github.com/krustowski/textovka-tui
 - basic multiplayer support (shared maps, paired map solving, fighting etc)
 - map choosing @ registration (list given before registration, optional argument in GET request)
 - player's password (hashed in JSON, prolly sha512)
+- locking oneself at their house (flats/blocks in the map)
+- possibility of killing others inside rooms/blocks/flats (how the defend mysqlf?)
+- API returns other room names @ its directions -> can be projected directly to TUI
+- queue of requests, or map locks (shared map is being overwritten, or compare/diff players' maps)
