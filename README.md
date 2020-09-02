@@ -200,3 +200,4 @@ https://github.com/krustowski/textovka-tui
 - possibility of killing others inside rooms/blocks/flats (how the defend mysqlf?)
 - API returns other room names @ its directions -> can be projected directly to TUI
 - queue of requests, or map locks (shared map is being overwritten, or compare/diff players' maps)
+- dockerfile + nginx simple config (simple install)
