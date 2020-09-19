@@ -201,3 +201,4 @@ https://github.com/krustowski/textovka-tui
 - API returns other room names @ its directions -> can be projected directly to TUI
 - queue of requests, or map locks (shared map is being overwritten, or compare/diff players' maps)
 - dockerfile + nginx simple config (simple install)
+- return `"room_visited": true/false` in `room` array
