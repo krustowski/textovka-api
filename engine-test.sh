@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # engine-test.sh
-# simple demo map batch test
+# simple demo map batch engine test
 # by krusty / 20. 9. 2020
 
 trap die SIGINT SIGKILL
@@ -31,7 +31,7 @@ actions=(
 
 i=0         # iterator in the actions loop
 apikey=""   # apikey for playing
-endpoint="https://text.n0p.cz/"
+endpoint="http://localhost:80"
 
 #
 # functions
@@ -71,7 +71,6 @@ function api_call {
 
 # init
 cd $(dirname $0)
-echo $(basename $0)
 [[ -d .tmp ]] || mkdir .tmp
 tools_check
 apikey=$(api_init)
