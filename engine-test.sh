@@ -29,9 +29,10 @@ actions=(
 # vars
 #
 
-i=0         # iterator in the actions loop
+i=0         # iterator in actions loop
 apikey=""   # apikey for playing
-endpoint="http://localhost:80"
+endpoint="http://localhost:80/"
+repodir=$(dirname $0)
 
 #
 # functions
@@ -39,7 +40,7 @@ endpoint="http://localhost:80"
 
 function die {
     echo $1
-    rm -rf .tmp
+    rm -rf $repodir/.tmp
     exit 1
 }
 
@@ -70,20 +71,20 @@ function api_call {
 #
 
 # init
-cd $(dirname $0)
-[[ -d .tmp ]] || mkdir .tmp
+cd $repodir
+[[ -d $repodir/.tmp ]] || mkdir -p $repodir/.tmp
 tools_check
 apikey=$(api_init)
 
 # loop through actions set
 for action in ${actions[@]}; do
     i=$((i+1))
-    api_call $action > .tmp/$i
+    api_call $action > $repodir/.tmp/$i;
 done
 
 # final check if game ended
-[[ $(cat .tmp/$i | jq -r '.player.game_ended') = "true" ]] \
+[[ $(cat $repodir/.tmp/$i | jq -r '.player.game_ended') = "true" ]] \
     && echo "test successful." \
     || die "game not eneded, check .tmp dir for curl logs..."
 
-rm -rf .tmp
+rm -rf $repodir/.tmp
