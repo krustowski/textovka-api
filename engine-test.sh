@@ -79,12 +79,20 @@ apikey=$(api_init)
 # loop through actions set
 for action in ${actions[@]}; do
     i=$((i+1))
-    api_call $action > $repodir/.tmp/$i;
+    [[ -z ${BUILD_FROM_DOCKER+x} ]] \ 
+        && api_call $action \
+        || api_call $action > $repodir/.tmp/$i;
 done
 
 # final check if game ended
-[[ $(cat $repodir/.tmp/$i | jq -r '.player.game_ended') = "true" ]] \
-    && echo "test successful." \
-    || die "game not eneded, check .tmp dir for curl logs..."
+if [[ -z ${BUILD_FROM_DOCKER+x} ]]; then
+    [[ $(cat $repodir/.tmp/$i | jq -r '.player.game_ended') = "true" ]] \
+        && echo "test successful." \
+        || die "game not eneded, check docker logs...";
+else
+    [[ $(api_call $action | jq '.player.game_ended') == "true" ]] \
+        && echo "test successful." \
+        || die "game not ended, check $repodir/.tmp for curl logs..."
+fi
 
 rm -rf $repodir/.tmp
