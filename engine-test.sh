@@ -89,14 +89,8 @@ for action in ${actions[@]}; do
 done
 
 # final check if game ended
-if [ ! -z ${BUILD_FROM_DOCKER+x} ]; then
-    [[ $(cat $repodir/.tmp/$i | jq -r '.player.game_ended') = "true" ]] \
-        && echo "test successful." \
-        || die "game not eneded, check docker logs...";
-else
-    [[ $(api_call $action | jq -r '.player.game_ended') == "true" ]] \
-        && echo "test successful." \
-        || die "game not ended, check $repodir/.tmp for curl logs...";
-fi
+[[ $(api_call $action | jq -r '.player.game_ended') == "true" ]] \
+    && echo "test successful." \
+    || die "game not ended, check $repodir/.tmp for curl logs..."
 
 rm -rf $repodir/.tmp
