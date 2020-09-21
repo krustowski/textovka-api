@@ -4,7 +4,7 @@
 # simple demo map batch engine test
 # by krusty / 20. 9. 2020
 
-trap die SIGINT SIGKILL
+#trap die SIGKILL
 
 # solution to maps/demo.json
 actions=(
@@ -40,7 +40,7 @@ repodir=$(dirname $0)
 
 function die {
     echo $1
-    rm -rf $repodir/.tmp
+    #rm -rf $repodir/.tmp
     exit 1
 }
 
@@ -72,27 +72,31 @@ function api_call {
 
 # init
 cd $repodir
-[[ -d $repodir/.tmp ]] || mkdir -p $repodir/.tmp
+[[ -d $repodir/.tmp/ ]] || mkdir -p $repodir/.tmp/
 tools_check
 apikey=$(api_init)
 
 # loop through actions set
 for action in ${actions[@]}; do
     i=$((i+1))
-    [[ -z ${BUILD_FROM_DOCKER+x} ]] \ 
-        && api_call $action \
-        || api_call $action > $repodir/.tmp/$i;
+
+    # executed from docker build
+    if [ ! -z ${BUILD_FROM_DOCKER+x} ]; then
+        api_call $action;
+    else 
+        api_call $action > $repodir/.tmp/$i;
+    fi;
 done
 
 # final check if game ended
-if [[ -z ${BUILD_FROM_DOCKER+x} ]]; then
+if [ ! -z ${BUILD_FROM_DOCKER+x} ]; then
     [[ $(cat $repodir/.tmp/$i | jq -r '.player.game_ended') = "true" ]] \
         && echo "test successful." \
         || die "game not eneded, check docker logs...";
 else
-    [[ $(api_call $action | jq '.player.game_ended') == "true" ]] \
+    [[ $(api_call $action | jq -r '.player.game_ended') == "true" ]] \
         && echo "test successful." \
-        || die "game not ended, check $repodir/.tmp for curl logs..."
+        || die "game not ended, check $repodir/.tmp for curl logs...";
 fi
 
 rm -rf $repodir/.tmp
