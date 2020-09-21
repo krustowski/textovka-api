@@ -41,7 +41,7 @@ ssh prod 'mv ~/textovka-api ~/textovka-api-bak && tar -xzf ~/textovka.tar.gz && 
     || die "cannot perform operations on prod..."
 
 cd -
-./engine-test.sh \
+docker/engine-test.sh \
     || rollback
 
 ssh prod 'rm -rf ~/textovka-api-bak' \
