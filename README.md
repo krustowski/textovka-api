@@ -36,9 +36,21 @@ timestamp / nickname / action / IP
 
 A directory where players' data are stored as JSON files.
 
+## Installation
+
+The easiest way to deploy this app is using Docker. This repo is automatically synced with Docker Cloud Build and the stable image is put on https://hub.docker.com/r/krustowski/textovka-api
+
+To run a container, just type following into you server running Docker (app is ported locally to `:8080`):
+
+```bash
+docker run -d -p 8080:80 --name textovka-api krustowski/textovka-api
+```
+
+The app can be run via ``php-fpm`` processor (like it's done inside the container above). A raw step-by-step solution therefore can be observed in Dockerfile.
+
 ## Registration
 
-For valid HTTPS communication cURL tool can be used. The registration is performed as a GET request:
+For valid HTTPS communication `cURL` tool can be used. The registration is performed via GET request:
 
 ```bash
 ENDPOINT="https://text.n0p.cz"
@@ -197,9 +209,9 @@ https://github.com/krustowski/textovka-tui
 - map choosing @ registration (list given before registration, optional argument in GET request)
 - player's password (hashed in JSON, prolly sha512)
 - locking oneself at their house (flats/blocks in the map)
-- possibility of killing others inside rooms/blocks/flats (how the defend mysqlf?)
+- possibility of killing others inside rooms/blocks/flats (how the defend oneself?)
 - API returns other room names @ its directions -> can be projected directly to TUI
 - queue of requests, or map locks (shared map is being overwritten, or compare/diff players' maps)
-- dockerfile + nginx simple config (simple install)
+- ~~dockerfile + nginx simple config (simple install)~~
 - return `"room_visited": true/false` in `room` array
 - assign `engine_build` to player @ registration -> 'new API version' notification
