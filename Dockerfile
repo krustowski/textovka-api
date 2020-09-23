@@ -17,6 +17,5 @@ EXPOSE 80
 #RUN nginx
 #CMD php-fpm7.3 -c /etc/php/7.3/fpm/pool.d/www.conf
 #CMD nginx -g "daemon off;"
-
 COPY docker/start.sh /start.sh
 CMD /start.sh

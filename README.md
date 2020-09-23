@@ -1,9 +1,38 @@
 # textovka API
 
-PHP REST API text-based game engine v1
+PHP REST API text-based game engine
 
-API endpoint:\
+API testing endpoint:\
 https://text.n0p.cz/
+
+## Installation
+
+The easiest way to deploy this app is using Docker. This repo is automatically synced with Docker Cloud Build and the stable image is put on https://hub.docker.com/r/krustowski/textovka-api.
+
+### Pull from Docker hub
+
+To run a container, just type following into you server running Docker (app is ported locally to `:8080`):
+
+```bash
+# the image is pulled automatically by docker
+docker run -d -p 8080:80 --name textovka-api krustowski/textovka-api
+```
+
+The API endpoint is then located on http://localhost:8080.
+
+### Using Dockerfile
+
+```bash
+git clone https://github.com/krustowski/textovka-api.git ~/textovka-api/
+docker build ~/textovka-api --tag=textovka-api-build
+docker run -d -p 8080:80 --name textovka-api textovka-api-build
+```
+
+### Manually 
+
+To run this API properly, you need PHP 7.3+ with `php-fpm` (PHP processor for proxy, voluntarily) and `php-json` (JSON processor) packages installed. Then I recommend using `nginx` as proxy, as it is very easy to set up.
+
+A raw step-by-step solution can be observed in Dockerfile.
 
 ## Structure of the repo
 
@@ -35,18 +64,6 @@ timestamp / nickname / action / IP
 `data/`
 
 A directory where players' data are stored as JSON files.
-
-## Installation
-
-The easiest way to deploy this app is using Docker. This repo is automatically synced with Docker Cloud Build and the stable image is put on https://hub.docker.com/r/krustowski/textovka-api
-
-To run a container, just type following into you server running Docker (app is ported locally to `:8080`):
-
-```bash
-docker run -d -p 8080:80 --name textovka-api krustowski/textovka-api
-```
-
-The app can be run via ``php-fpm`` processor (like it's done inside the container above). A raw step-by-step solution therefore can be observed in Dockerfile.
 
 ## Registration
 
@@ -215,3 +232,4 @@ https://github.com/krustowski/textovka-tui
 - ~~dockerfile + nginx simple config (simple install)~~
 - return `"room_visited": true/false` in `room` array
 - assign `engine_build` to player @ registration -> 'new API version' notification
+- map API logs to docker logs

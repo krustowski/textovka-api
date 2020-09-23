@@ -55,7 +55,7 @@ function api_init {
 
     # register call
     unistring=$(date +%s | shasum -a 256 | cut -d' ' -f1)
-    apikey=$(curl -sSL "$endpoint?register=$unistring" | jq -r '.api.apikey')
+    apikey=$(curl -sSL "$endpoint?register=$unistring&map=demo" | jq -r '.api.apikey')
 
     [[ $apikey ]] || die "no apikey received from server..."
 

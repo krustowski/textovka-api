@@ -19,6 +19,7 @@ class Game
     private $timestamp;
     private $remote_ip;
     private $apikey = null;
+    private $gets = [];
 
     // user attributes
     private $nickname = null;
@@ -26,6 +27,7 @@ class Game
     private $room = null;
     private $exit_room = null;
     private $inventary = [];
+    private $init_map = null;
     private $map = null;
     private $map_name = null;
     private $time_registered;
@@ -53,22 +55,22 @@ class Game
     private function processGets()
     {
         // XSS
-        $gets = array_map("htmlspecialchars", $_GET);
+        $this->gets = array_map("htmlspecialchars", $_GET);
 
         // register API call
-        if (isset($gets["register"]) && !empty($gets["register"])) {
-            $this->nickname = $gets["register"];
+        if (isset($this->gets["register"]) && !empty($this->gets["register"])) {
+            $this->nickname = $this->gets["register"];
             $this->generateKey();
         }
 
         // blank API call
-        if (!isset($gets["apikey"])) {
+        if (!isset($this->gets["apikey"])) {
             $this->message = "No API key (apikey) passed. You can get one by performing a registration by appending 'register=user_name' where 'user_name' is your nickname.";
             $this->writeJSON(401);
         }
 
         // try that API key then
-        $this->apikey = $gets["apikey"];
+        $this->apikey = $this->gets["apikey"];
 
         // wrong API key, data file (user) does not exist
         if (!file_exists(__DIR__ . "/../data/" . $this->apikey . ".json")) {
@@ -81,8 +83,8 @@ class Game
         $this->getUserData();
 
         // try given action
-        if (isset($gets["action"]) && !empty($gets["action"])) {
-            $this->action = $gets["action"];
+        if (isset($this->gets["action"]) && !empty($this->gets["action"])) {
+            $this->action = $this->gets["action"];
             $this->processAction();
         }
 
@@ -117,46 +119,21 @@ class Game
             }
         }
 
-        // maps
-        //$maps = scandir(__DIR__ . "/../maps/");
-        $maps = [];
-
-        // exclude testing maps (_testing.json)!
-        foreach (glob(__DIR__ . "/../maps/[^\_]*.json") as $map_file) {
-            array_push($maps, $map_file);
-        }
-
-        if(empty($maps)) {
-            $this->message = "Internal server error: no map file found";
-            $this->writeJSON(500);
-        }
-
-        $maps_count = count($maps);
-
-        // try to load the world map
-        $rand_map_num = ($maps_count > 2) ? rand(2, --$maps_count) : null;
-        $init_map = ($rand_map_num && $maps[$rand_map_num]) ? json_decode(file_get_contents(__DIR__ . "/../maps/" . $maps[$rand_map_num]), true) : json_decode(file_get_contents(__DIR__ . "/../maps/demo.json"), true);
-
-        $this->map_name = ($rand_map_num && $maps[$rand_map_num]) ? $maps[$rand_map_num] : "demo.json";
-
-        // invalid map file
-        if (is_null($init_map)) {
-            $this->message = "Internal game error: invalid map (invalid JSON file)";
-            $this->writeJSON(500);
-        }
+        $this->assignMap();
 
         // player data to be written
         $json_data = [
             "nickname" => $this->nickname,
             "hp" => 100,
             "inventary" => [],
-            "room" => $init_map["start_room"],
-            "exit_room" => $init_map["exit_room"],
+            "room" => $this->init_map["start_room"] ?? null,
+            "exit_room" => $this->init_map["exit_room"] ?? null,
             "game_ended" => false,
             "time_registered" => (int) $this->timestamp,
             "time_ended" => null,
+            "engine_build" => $this->engine_build,
             "map_name" => $this->map_name,
-            "map" => $init_map,
+            "map" => $this->init_map,
         ];
 
         // write data to a new file
@@ -167,6 +144,54 @@ class Game
         $this->action = "register";
         $this->message = "New API key (apikey) for '" . $this->nickname . "' generated.";
         $this->writeJSON();
+    }
+
+    // assign some map to newly registred player
+    private function assignMap()
+    {
+        //$maps = scandir(__DIR__ . "/../maps/");
+        $maps = [];
+
+        // exclude testing maps (f.e. _testing.json)!
+        foreach (glob(__DIR__ . "/../maps/[^\_]*.json") as $map_file) {
+            array_push($maps, $map_file);
+        }
+
+        if(empty($maps)) {
+            $this->message = "Internal server error: no map file found";
+            $this->writeJSON(500);
+        }
+
+        // demo map is essential (f.e. for tests)
+        if (!in_array("demo.json", $maps)) {
+            $this->message = "Internal server error: demo map not found";
+            $this->writeJSON();
+        }
+
+        $maps_count = count($maps);
+
+        $preferred_map = $this->gets["map"] ?? null;
+
+        // if preferred map is available, assign it
+        if ($preferred_map) {
+            $init_map = json_decode(file_get_contents(__DIR__ . "/../maps/" . $preferred_map . ".json"), true) ?? json_decode(file_get_contents(__DIR__ . "/../maps/demo.json"), true);
+
+            $this->map_name = !is_null($init_map) ? $preferred_map : "demo.json";
+        } else {
+            // try to load random world map from maps/
+            $rand_map_num = ($maps_count > 2) ? rand(2, --$maps_count) : null;
+            $init_map = ($rand_map_num && $maps[$rand_map_num]) ? json_decode(file_get_contents(__DIR__ . "/../maps/" . $maps[$rand_map_num]), true) : json_decode(file_get_contents(__DIR__ . "/../maps/demo.json"), true);
+
+            $this->map_name = ($rand_map_num && $maps[$rand_map_num]) ? $maps[$rand_map_num] : "demo.json";
+        }
+
+        // invalid map file
+        if (is_null($init_map)) {
+            $this->message = "Internal game error: invalid map (invalid JSON file)";
+            $this->writeJSON(500);
+        }
+
+        $this->init_map = $init_map;
     }
 
     // load player data
