@@ -89,7 +89,7 @@ for action in ${actions[@]}; do
 done
 
 # final check if game ended
-[[ $(api_call $action | jq -r '.player.game_ended') == "true" ]] \
+api_call $action | jq -r '.player.game_ended' | grep -wq true \
     && echo "test successful." \
     || die "game not ended, check $repodir/.tmp for curl logs..."
 
