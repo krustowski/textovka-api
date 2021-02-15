@@ -31,7 +31,7 @@ actions=(
 
 i=0         # iterator in actions loop
 apikey=""   # apikey for playing
-endpoint="http://localhost:80/"
+endpoint="http://localhost:80"
 repodir=$(dirname $0)
 
 #
@@ -51,19 +51,19 @@ function tools_check {
 
 function api_init {
     # connection test
-    curl -sSL "$endpoint" &> /dev/null || die "connection error - endpoint cannot be reached..."
+    curl -s "${endpoint}" &> /dev/null || die "connection error - endpoint cannot be reached..."
 
     # register call
-    unistring=$(date +%s | shasum -a 256 | cut -d' ' -f1)
-    apikey=$(curl -sSL "$endpoint?register=$unistring&map=demo" | jq -r '.api.apikey')
+    local unistring=$(date +%s | shasum -a 256 | cut -d' ' -f1)
+    local apikey=$(curl -s "${endpoint}?register=${unistring}" | jq -r '.api.apikey')
 
-    [[ $apikey ]] || die "no apikey received from server..."
+    [[ -n $apikey ]] || die "no apikey received from server..."
 
     echo $apikey
 }
 
 function api_call {
-    curl -sSL "$endpoint?apikey=$apikey&action=$1"
+    curl -s "${endpoint}?apikey=${apikey}&action=${1}"
 }
 
 #
@@ -72,7 +72,7 @@ function api_call {
 
 # init
 cd $repodir
-[[ -d $repodir/.tmp/ ]] || mkdir -p $repodir/.tmp/
+[[ -d ${repodir}/.tmp/ ]] || mkdir -p ${repodir}/.tmp/
 tools_check
 apikey=$(api_init)
 
@@ -89,7 +89,7 @@ for action in ${actions[@]}; do
 done
 
 # final check if game ended
-api_call $action | jq -r '.player.game_ended' | grep -wq true \
+api_call "random-cmd" | jq '.player.game_ended' | grep -wq true \
     && echo "test successful." \
     || die "game not ended, check $repodir/.tmp for curl logs..."
 

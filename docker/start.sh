@@ -6,6 +6,6 @@
 
 service php7.3-fpm start && \
 service nginx start && \
-/var/www/textovka-api/docker/engine-test.sh > /dev/null && \
+/var/www/textovka-api/docker/engine-test.sh && \
 service nginx stop && \
 nginx -g "daemon off;"

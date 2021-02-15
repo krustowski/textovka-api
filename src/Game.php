@@ -163,10 +163,10 @@ class Game
         }
 
         // demo map is essential (f.e. for tests)
-        if (!in_array("demo.json", $maps)) {
+        /*if (!in_array("demo.json", $maps)) {
             $this->message = "Internal server error: demo map not found";
             $this->writeJSON();
-        }
+	}*/
 
         $maps_count = count($maps);
 
