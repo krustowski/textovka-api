@@ -464,7 +464,7 @@ class Game
 
         // put JSON data
         //http_response_code($code);
-        header('Content-type: text/javascript');
+        header('Content-type: application/json');
         echo json_encode($json_output, JSON_PRETTY_PRINT);
         exit();
     }
