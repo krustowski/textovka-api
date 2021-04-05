@@ -1,0 +1,17 @@
+{
+    "name": "krusty/textovka-api",
+    "type": "project",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "krustowski",
+            "email": "krusty@n0p.cz"
+        }
+    ],
+    "require": {},
+    "autoload": {
+        "psr-4": {
+    	    "textovka\\": "src/"
+        }
+    }
+}
