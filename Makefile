@@ -28,7 +28,7 @@ endif
 
 export
 
-.PHONY: deploy docker* data src maps build
+.PHONY: deploy docker* data src maps build composer git
 
 all: info
 
@@ -41,7 +41,15 @@ info:
 #@echo "${YELLOW} make docs${RESET}  \t build documentation"
 #echo "${YELLOW} make push${RESET}  \t push image into the registry"*/
 
-run: build start test
+run: git composer build start test
+
+git:
+	@echo "\n${YELLOW} Git pull ...${RESET}\n"
+	@git pull
+
+composer:
+	@echo "\n${YELLOW} Composer update ...${RESET}\n"
+	@composer update
 
 build:
 	@echo "\n${YELLOW} Building the image ...${RESET}\n"
