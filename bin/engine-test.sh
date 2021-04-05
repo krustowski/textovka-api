@@ -2,9 +2,11 @@
 
 # engine-test.sh
 # simple demo map batch engine test
-# by krusty / 20. 9. 2020
+# by krusty / 20. 9. 2020 / redacted 5. 4. 2021
 
 #trap die SIGKILL
+
+[[ -z ${APP_PORT} ]] && echo "This has to be run from Makefile ..." && exit 1
 
 # solution to maps/demo.json
 actions=(
@@ -31,8 +33,8 @@ actions=(
 
 i=0         # iterator in actions loop
 apikey=""   # apikey for playing
-endpoint="http://localhost:80"
-repodir=$(dirname $0)
+endpoint="http://localhost:${APP_PORT}/"
+repodir=$(dirname $0)/..
 
 #
 # functions
@@ -51,11 +53,11 @@ function tools_check {
 
 function api_init {
     # connection test
-    curl -s "${endpoint}" &> /dev/null || die "connection error - endpoint cannot be reached..."
+    curl -sL "${endpoint}" &> /dev/null || die "connection error - endpoint cannot be reached..."
 
     # register call
     local unistring=$(date +%s | shasum -a 256 | cut -d' ' -f1)
-    local apikey=$(curl -s "${endpoint}?register=${unistring}" | jq -r '.api.apikey')
+    local apikey=$(curl -sL "${endpoint}?register=${unistring}" | jq -r '.api.apikey')
 
     [[ -n $apikey ]] || die "no apikey received from server..."
 
@@ -63,7 +65,7 @@ function api_init {
 }
 
 function api_call {
-    curl -s "${endpoint}?apikey=${apikey}&action=${1}"
+    curl -sL "${endpoint}?apikey=${apikey}&action=${1}"
 }
 
 #
@@ -94,3 +96,4 @@ api_call "random-cmd" | jq '.player.game_ended' | grep -wq true \
     || die "game not ended, check $repodir/.tmp for curl logs..."
 
 rm -rf $repodir/.tmp
+

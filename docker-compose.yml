@@ -1,0 +1,19 @@
+version: '3.6'
+
+services:
+  textovka-api:
+    image: ${IMAGE_NAME}
+    container_name: ${CONTAINER_NAME}
+    build: .
+    restart: unless-stopped
+    ports:
+      - ${APP_PORT}:80
+    volumes:
+      - "/app/${CONTAINER_NAME}/data:${APP_ROOT}/data"
+      - "/app/${CONTAINER_NAME}/maps:${APP_ROOT}/maps"
+    networks:
+      - textovka-net
+
+networks:
+  textovka-net:
+    name: textovka-net

@@ -8,8 +8,10 @@
 
 namespace textovka;
 
+defined("ROOT_DIR") || define("ROOT_DIR", __DIR__ . "/..");
+
 // load all classes
-foreach (glob("src/*.php") as $filename) {
+foreach (glob(ROOT_DIR . "/src/*.php") as $filename) {
     include_once $filename;
 }
 

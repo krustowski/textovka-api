@@ -15,7 +15,7 @@ class Game
     private $version = "v1";
     private $engine_build;
     private $message;
-    private $log_file = __DIR__ . "/../game.log";
+    private $log_file = ROOT_DIR . "/game.log";
     private $timestamp;
     private $remote_ip;
     private $apikey = null;
@@ -73,7 +73,7 @@ class Game
         $this->apikey = $this->gets["apikey"];
 
         // wrong API key, data file (user) does not exist
-        if (!file_exists(__DIR__ . "/../data/" . $this->apikey . ".json")) {
+        if (!file_exists(ROOT_DIR . "/data/" . $this->apikey . ".json")) {
             $this->apikey = null;
             $this->message = "Unknown API key (apikey) given.";
             $this->writeJSON(403);
@@ -104,10 +104,10 @@ class Game
         while (true) {
             $new_hash = hash("sha256", self::PEPPER . $this->nickname . $this->engine_build);
 
-            if (!file_exists(__DIR__ . "/../data/" . $new_hash . ".json")) {
+            if (!file_exists(ROOT_DIR . "/data/" . $new_hash . ".json")) {
                 break;
             } else {
-                $json_data = json_decode(file_get_contents(__DIR__ . "/../data/" . $new_hash . ".json"), true);
+                $json_data = json_decode(file_get_contents(ROOT_DIR . "/data/" . $new_hash . ".json"), true);
 
                 // user is already registered (has their file with such nickname)
                 if ($json_data["nickname"] == $this->nickname) {
@@ -137,7 +137,7 @@ class Game
         ];
 
         // write data to a new file
-        file_put_contents(__DIR__ . "/../data/" . $new_hash . ".json", json_encode($json_data));
+        file_put_contents(ROOT_DIR . "/data/" . $new_hash . ".json", json_encode($json_data));
 
         // JSON output
         $this->apikey = $new_hash;
@@ -149,11 +149,11 @@ class Game
     // assign some map to newly registred player
     private function assignMap()
     {
-        //$maps = scandir(__DIR__ . "/../maps/");
+        //$maps = scandir(ROOT_DIR . "/maps/");
         $maps = [];
 
         // exclude testing maps (f.e. _testing.json)!
-        foreach (glob(__DIR__ . "/../maps/[^\_]*.json") as $map_file) {
+        foreach (glob(ROOT_DIR . "/maps/[^\_]*.json") as $map_file) {
             array_push($maps, $map_file);
         }
 
@@ -174,13 +174,13 @@ class Game
 
         // if preferred map is available, assign it
         if ($preferred_map) {
-            $init_map = json_decode(file_get_contents(__DIR__ . "/../maps/" . $preferred_map . ".json"), true) ?? json_decode(file_get_contents(__DIR__ . "/../maps/demo.json"), true);
+            $init_map = json_decode(file_get_contents(ROOT_DIR . "/maps/" . $preferred_map . ".json"), true) ?? json_decode(file_get_contents(ROOT_DIR . "/maps/demo.json"), true);
 
             $this->map_name = !is_null($init_map) ? $preferred_map : "demo.json";
         } else {
             // try to load random world map from maps/
             $rand_map_num = ($maps_count > 2) ? rand(2, --$maps_count) : null;
-            $init_map = ($rand_map_num && $maps[$rand_map_num]) ? json_decode(file_get_contents(__DIR__ . "/../maps/" . $maps[$rand_map_num]), true) : json_decode(file_get_contents(__DIR__ . "/../maps/demo.json"), true);
+            $init_map = ($rand_map_num && $maps[$rand_map_num]) ? json_decode(file_get_contents(ROOT_DIR . "/maps/" . $maps[$rand_map_num]), true) : json_decode(file_get_contents(ROOT_DIR . "/maps/demo.json"), true);
 
             $this->map_name = ($rand_map_num && $maps[$rand_map_num]) ? $maps[$rand_map_num] : "demo.json";
         }
@@ -197,7 +197,7 @@ class Game
     // load player data
     private function getUserData()
     {
-        $data = json_decode(file_get_contents(__DIR__ . "/../data/" . $this->apikey . ".json"), true);
+        $data = json_decode(file_get_contents(ROOT_DIR . "/data/" . $this->apikey . ".json"), true);
 
         // invalid player file
         if (is_null($data)) {
@@ -419,7 +419,7 @@ class Game
             "map" => $this->map,
         ];
 
-        file_put_contents(__DIR__ . "/../data/" . $this->apikey . ".json", json_encode($json_data));
+        file_put_contents(ROOT_DIR . "/data/" . $this->apikey . ".json", json_encode($json_data));
     }
 
     // put JSON to player - exit function
