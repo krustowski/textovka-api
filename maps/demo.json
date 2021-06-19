@@ -1,4 +1,5 @@
 {
+	"map_name": "demo_map",
 	"start_room": "aa",
 	"exit_room": "gg",
 

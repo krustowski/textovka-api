@@ -19,9 +19,12 @@
 
 namespace textovka;
 
-defined("ROOT_DIR") || define("ROOT_DIR", __DIR__ . "/..");
-
-// composer load
-require ROOT_DIR . "/vendor/autoload.php";
-
-new Game();
+class Room 
+{
+    private array $neighborhood = [
+        "north" => null,
+        "south" => null,
+        "easy" => null,
+        "west" => null
+    ];
+}
