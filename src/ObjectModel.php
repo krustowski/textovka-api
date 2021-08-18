@@ -9,7 +9,7 @@
  * @OA\Info(
  *      title="textovka REST API", 
  *      description="PHP REST API text-based game engine",
- *      version="1.1",
+ *      version="1.3",
  *      @OA\Contact(
  *          name="krustowski",
  *          email="textovka@n0p.cz"
@@ -17,9 +17,9 @@
  * )
  */
 
-namespace textovka;
+namespace Textovka;
 
-class Inventary
+class ObjectModel 
 {
-
+    
 }

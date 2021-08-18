@@ -17,9 +17,14 @@
  * )
  */
 
-namespace textovka;
+namespace Textovka;
 
-class Api 
+class InventoryModel
 {
-    
+    public function __construct(
+        private array $importedItems = []
+    )
+    {
+        
+    }
 }

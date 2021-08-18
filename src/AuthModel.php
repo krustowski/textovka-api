@@ -17,14 +17,9 @@
  * )
  */
 
-namespace textovka;
+namespace Textovka;
 
-class Room 
+class AuthModel
 {
-    private array $neighborhood = [
-        "north" => null,
-        "south" => null,
-        "easy" => null,
-        "west" => null
-    ];
+
 }
