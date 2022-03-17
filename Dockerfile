@@ -2,7 +2,7 @@
 #
 # krustowski <k@n0p.cz>
 
-FROM alpine:latest
+FROM alpine:3.15
 
 #
 # vars / env
