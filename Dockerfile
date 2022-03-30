@@ -44,7 +44,7 @@ RUN cd /var/www && rm -rf html localhost && \
 
 RUN rm -f /etc/nginx/http.d/* && \
     ln -s ${APP_ROOT}/docker/nginx-textovka-api.conf /etc/nginx/http.d/ 
-RUN mkdir /run/nginx && \
+RUN mkdir -p /run/nginx && \
     chown nginx:nginx /run/nginx && \
     nginx -t && \
     php-fpm8 -t && \
