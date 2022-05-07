@@ -1,59 +1,62 @@
 # textovka-api Dockerfile
 #
-# krustowski <k@n0p.cz>
+# krustowski <krusty@savla.dev>
 
-FROM alpine:3.15
+FROM nginx:stable-alpine
+
 
 #
-# vars / env
+# args / env
 #
 
-ENV PHP_VERSION 8.0
-ENV APP_ROOT "/var/www/textovka-api"
-ENV TZ "Europe/Prague"
+ARG PHP_VERSION "php8"
+ARG APP_ROOT "/var/www/textovka-api"
+ARG TZ "Europe/Oslo"
+
+ENV PHP_VERSION ${PHP_VERSION}
+ENV APP_ROOT ${APP_ROOT}
+ENV TZ ${TZ}
 ENV BUILD_FROM_DOCKER 1 
 
+
 #
-# essentials
+# runntime tools
 #
 
 RUN apk update && \
     apk upgrade && \
     apk add --no-cache \
-    	bash \
-	nginx \
 	curl \
 	jq \
-	php8 \
-	php8-json \
-	php8-fpm \
+	${PHP_VERSION} \
+	${PHP_VERSION}-json \
+	${PHP_VERSION}-fpm \
 	tzdata
 
+
 #
-# clone the repo
+# "clone" the repo, and inject nginx and php-fpm configs
 #
 
 COPY . ${APP_ROOT}
-RUN cd /var/www && rm -rf html localhost && \
-    chmod a+w ${APP_ROOT} && \
-    chown -R nginx:nginx ${APP_ROOT}
+COPY .docker/99-daemonize-fpm-and-run-nginx.sh /docker-entrypoint.d/99-daemonize-fpm-and-run-nginx.sh
+COPY .docker/php-fpm.d_www.conf /etc/${PHP_VERSION}/php-fpm.d/www.conf
 
 #
-# reconfigure
+# run runtime tests
 #
 
-RUN rm -f /etc/nginx/http.d/* && \
-    ln -s ${APP_ROOT}/docker/nginx-textovka-api.conf /etc/nginx/http.d/ 
-RUN mkdir -p /run/nginx && \
-    chown nginx:nginx /run/nginx && \
-    nginx -t && \
+RUN nginx -t && \
     php-fpm8 -t && \
-    ln -sf /dev/stdout /var/www/textovka-api/game.log
+    ln -sf /dev/stdout ${APP_ROOT}/game.log
+
 
 #
 # final batch
 #
 
+USER ${DOCKER_USER}
 WORKDIR ${APP_ROOT}
-EXPOSE 80
-ENTRYPOINT ["docker/entrypoint.sh"]
+EXPOSE ${DOCKER_EXPOSE_PORT}
+#ENTRYPOINT ["/entrypoint.sh"]
+

@@ -1,19 +1,57 @@
+# TODO: UPGRADE docker-compose!
 version: '3.6'
+
+
+networks:
+  textovka_net:
+    name: ${DOCKER_NETWORK_NAME}
+
+
+volumes:
+  textovka_data:
+    name: ${DOCKER_VOLUME_NAME} 
+
 
 services:
   textovka-api:
-    image: ${IMAGE_NAME}
-    container_name: ${CONTAINER_NAME}
-    build: .
+    image: ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}
+    container_name: ${DOCKER_CONTAINER_NAME}
+    build: 
+      context: .
+      dockerfile: ./Dockerfile
+      args:
+        APP_NAME: ${APP_NAME}
+        APP_ROOT: ${APP_ROOT}
+        DOCKER_EXPOSE_PORT: ${DOCKER_EXPOSE_PORT}
+        DOCKER_USER: ${DOCKER_USER}
+        PHP_VERSION: ${PHP_VERSION}
+        TZ: ${TZ}
     restart: unless-stopped
+    # do not expose ingress point to all interfaces --- security issue?
     ports:
-      - ${APP_PORT}:80
+      - ${DOCKER_EXPOSE_PORT}:${DOCKER_EXPOSE_PORT}
     volumes:
-      - "/app/${CONTAINER_NAME}/data:${APP_ROOT}/data"
-      - "/app/${CONTAINER_NAME}/maps:${APP_ROOT}/maps"
+      # app runtime I/O mount
+      - "${DOCKER_VOLUME_NAME}:${APP_ROOT}/data:rw"
+      - "${PWD}/maps:${APP_ROOT}/maps:ro"
+      # internal/app nginx config mount
+      - "${PWD}/.docker/nginx.conf:/etc/nginx/nginx.conf:ro"
+      - "${PWD}/.docker/default.conf.template:/etc/nginx/templates/default.conf.template:ro"
+      # (alternative) internal/app traefik config mount --- security issue?
+      #- ${PWD}/.docker/traefik.yml:/etc/traefik/traefik.yml:ro
+      #- /var/run/docker.sock:/ar/run/docker.sock
     networks:
-      - textovka-net
+      - ${DOCKER_NETWORK_NAME}
+    labels:
+      # (optional) _external_ reverse-proxy traefik pointers
+      - "traefik.http.routers.${APP_NAME}.rule=Host(`${APP_URL}`) || Host(`${APP_URL_ALT}`)"
+      - "traefik.http.services.${APP_NAME}.loadbalancer.server.port=${DOCKER_EXPOSE_PORT}"
+    environment:
+      # _internal_ reverse-proxy nginx vars --- mostly nignx-image defaults
+      - "NGINX_ENVSUBST_TEMPLATE_DIR=${NGINX_ENVSUBST_TEMPLATE_DIR}"
+      - "NGINX_ENVSUBST_TEMPLATE_SUFFIX=${NGINX_ENVSUBST_TEMPLATE_SUFFIX}"
+      - "NGINX_ENVSUBST_OUTPUT_DIR=${NGINX_ENVSUBST_OUTPUT_DIR}"
+      - "NGINX_HOST=${NGINX_HOST}"
+      - "NGINX_PORT=${NGINX_PORT}"
 
-networks:
-  textovka-net:
-    name: textovka-net
+
