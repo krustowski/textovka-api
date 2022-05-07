@@ -1,12 +1,11 @@
-#!/bin/bash
+#!/bin/sh
 
 # engine-test.sh
 # simple demo map batch engine test
-# by krusty / 20. 9. 2020 / redacted 5. 4. 2021
+# by krusty / 20. 9. 2020
 
 #trap die SIGKILL
 
-[[ -z ${APP_PORT} ]] && echo "This has to be run from Makefile ..." && exit 1
 
 # solution to maps/demo.json
 actions=(
@@ -27,14 +26,16 @@ actions=(
     "go-west"
 )
 
+
 #
 # vars
 #
 
 i=0         # iterator in actions loop
 apikey=""   # apikey for playing
-endpoint="http://localhost:${APP_PORT}/"
+endpoint="http://localhost:${DOCKER_EXPOSE_PORT}/"
 repodir=$(dirname $0)/..
+
 
 #
 # functions
@@ -72,11 +73,15 @@ function api_call {
 # script start
 #
 
+
 # init
+[[ -z ${MAKEFILE_CALL} ]] && die "This has to be run from Makefile ..."
+
 cd $repodir
 [[ -d ${repodir}/.tmp/ ]] || mkdir -p ${repodir}/.tmp/
 tools_check
 apikey=$(api_init)
+
 
 # loop through actions set
 for action in ${actions[@]}; do
@@ -90,10 +95,13 @@ for action in ${actions[@]}; do
     fi;
 done
 
+
 # final check if game ended
 api_call "random-cmd" | jq '.player.game_ended' | grep -wq true \
     && echo "test successful." \
     || die "game not ended, check $repodir/.tmp for curl logs..."
 
+
+# clean test outputs if succ'd
 rm -rf $repodir/.tmp
 

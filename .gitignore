@@ -1,3 +1,4 @@
-data/*json
-
-/vendor/
+/.env
+/.tmp
+/vendor
+composer.lock
