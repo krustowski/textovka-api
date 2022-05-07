@@ -59,7 +59,9 @@ info:
 	@echo -e "${YELLOW} make rebuild${RESET} \t rebuild image and recreate the container\n"
 #@echo -e "${YELLOW} make push${RESET}  \t push image into the registry\n"
 
-run: run_test
+# TODO: test script is broken!
+#run: run_test
+run: start
 
 
 #
