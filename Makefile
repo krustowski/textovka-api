@@ -45,10 +45,9 @@ export
 # main targets
 #
 
-.PHONY: deploy docker* data src maps build composer .git vendor
-
 all: info
 
+.PHONY: info
 info:
 	@echo -e "\n${GREEN} ${APP_NAME} / Makefile ${RESET}\n"
 	@echo -e "${YELLOW} make run${RESET} \t build and run the container"
@@ -61,6 +60,7 @@ info:
 
 # TODO: test script is broken!
 #run: run_test
+.PHONY: run
 run: start
 
 
@@ -68,26 +68,32 @@ run: start
 # aux targets as "a pipe"
 #
 
+.PHONY: git_pull
 git_pull:
 	@echo -e "\n${YELLOW} Git pull ...${RESET}\n"
 	@git pull -f
 
+.PHONY: composer 
 composer: git_pull
 	@echo -e "\n${YELLOW} Composer update ...${RESET}\n"
 	@composer install && composer update
 
+.PHONY: build
 build:  composer
 	@echo -e "\n${YELLOW} Building the image ...${RESET}\n"
 	@docker-compose build --no-cache
 
+.PHONY: start
 start:	build
 	@echo -e "\n${YELLOW} Starting the container ...${RESET}\n"
 	@docker-compose up --detach
 
+.PHONY: run_test
 run_test: start
 	@echo -e "\n${YELLOW} Testing the container ...${RESET}\n"
 	@bash ./bin/engine-test.sh
 
+.PHONY: stop
 stop:
 	@echo -e "\n${YELLOW} Stopping the container ...${RESET}\n"
 	@docker-compose down
@@ -97,17 +103,20 @@ stop:
 # others, dev targets
 #
 
+.PHONY: rebuild
 rebuild:
 	@echo -e "\n${YELLOW} Rebuilding and reruning the container ...${RESET}\n"
 	@git pull 2> /dev/null && \
 		docker-compose build && \
 		docker-compose up --detach
 
-exec:
+.PHONY: sh
+sh:
 	@echo -e "\n${YELLOW} Entering container's shell ...${RESET}\n"
 	@docker exec -it ${DOCKER_CONTAINER_NAME} sh
 	
 
+.PHONY: logs
 logs:
 	@echo -e "\n${YELLOW} Tailing logs ...${RESET}\n"
 	@docker logs -f ${DOCKER_CONTAINER_NAME}

@@ -433,6 +433,7 @@ class Game
             "nickname" => $this->nickname,
             "hp" => $this->hp,
             "room" => $this->room,
+	    "map_name" => $this->map_name,
             "inventary" => $this->inventary,
             "time_elapsed" => !is_null($this->time_ended) ? ((int) $this->time_ended - (int) $this->time_registered) : ((int) $this->timestamp - (int) $this->time_registered),
             "game_ended" => $this->game_ended,

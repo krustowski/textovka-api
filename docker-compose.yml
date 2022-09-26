@@ -44,7 +44,7 @@ services:
       - ${DOCKER_NETWORK_NAME}
     labels:
       # (optional) _external_ reverse-proxy traefik pointers
-      - "traefik.http.routers.${APP_NAME}.rule=Host(`${APP_URL}`) || Host(`${APP_URL_ALT}`)"
+      - "traefik.http.routers.${APP_NAME}.rule=Host(`${APP_URL}`) || Host(${APP_URLS})"
       - "traefik.http.services.${APP_NAME}.loadbalancer.server.port=${DOCKER_EXPOSE_PORT}"
     environment:
       # _internal_ reverse-proxy nginx vars --- mostly nignx-image defaults
