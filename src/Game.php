@@ -180,7 +180,7 @@ class Game
         } else {
             // try to load random world map from maps/
             $rand_map_num = ($maps_count > 2) ? rand(2, --$maps_count) : null;
-            $init_map = ($rand_map_num && $maps[$rand_map_num]) ? json_decode(file_get_contents(ROOT_DIR . "/maps/" . $maps[$rand_map_num]), true) : json_decode(file_get_contents(ROOT_DIR . "/maps/demo.json"), true);
+            $init_map = ($rand_map_num && $maps[$rand_map_num]) ? json_decode(file_get_contents($maps[$rand_map_num]), true) : json_decode(file_get_contents(ROOT_DIR . "/maps/demo.json"), true);
 
             $this->map_name = ($rand_map_num && $maps[$rand_map_num]) ? $maps[$rand_map_num] : "demo.json";
         }
