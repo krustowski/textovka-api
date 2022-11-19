@@ -91,7 +91,7 @@ start:	build
 .PHONY: run_test
 run_test: start
 	@echo -e "\n${YELLOW} Testing the container ...${RESET}\n"
-	@bash ./bin/engine-test.sh
+	@bash ./script/engine-test.sh
 
 .PHONY: stop
 stop:
