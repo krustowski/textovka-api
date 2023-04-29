@@ -15,7 +15,7 @@ class Game
     private $version = "v1";
     private $engine_build;
     private $message;
-    private $log_file = ROOT_DIR . "/game.log";
+    //private $log_file = ROOT_DIR . "/game.log";
     private $timestamp;
     private $remote_ip;
     private $apikey = null;
@@ -426,7 +426,7 @@ class Game
     private function writeJSON($code = 200)
     {
         // logging
-        file_put_contents($this->log_file, (int) $this->timestamp . " / " . ($this->nickname ?? "none") . " / " . ($this->action ?? "none") . " / " . $this->remote_ip . "\n", FILE_APPEND);
+        //file_put_contents($this->log_file, (int) $this->timestamp . " / " . ($this->nickname ?? "none") . " / " . ($this->action ?? "none") . " / " . $this->remote_ip . "\n", FILE_APPEND);
 
         // player data
         $player_data = [
