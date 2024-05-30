@@ -1,0 +1,50 @@
+{
+  "locations": {
+    "village": {
+      "description": "You find yourself in a quiet village.",
+      "items": ["key", "map"],
+      "exits": {
+        "north": "castle",
+        "south": "dock",
+        "east": "market",
+        "west": "forest"
+      }
+    },
+    "castle": {
+      "description": "You stand before a grand castle.",
+      "items": ["sword"],
+      "exits": {
+        "south": "village"
+      }
+    },
+    "dock": {
+      "description": "You are at a small dock by the river.",
+      "items": ["boat"],
+      "exits": {
+        "north": "village"
+      }
+    },
+    "market": {
+      "description": "You are in a bustling market.",
+      "items": ["coin"],
+      "exits": {
+        "west": "village"
+      }
+    },
+    "forest": {
+      "description": "You are deep in a dark forest.",
+      "items": ["lantern"],
+      "exits": {
+        "east": "village",
+        "north": "cave"
+      }
+    },
+    "cave": {
+      "description": "You enter a dark and damp cave.",
+      "items": ["torch"],
+      "exits": {
+        "south": "forest"
+      }
+    }
+  }
+}
