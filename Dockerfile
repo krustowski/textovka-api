@@ -2,7 +2,7 @@
 #
 # krustowski <krusty@savla.dev>
 
-FROM nginx:stable-alpine
+FROM nginx:1.26.1-alpine3.19
 
 
 #
